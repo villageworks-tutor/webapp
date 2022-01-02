@@ -32,6 +32,61 @@ class ItemDao2Test {
 	}
 
 	@Nested
+	@DisplayName("ItemDAO2#findByPriceメソッドのテストクラス")
+	class findByPrice {
+		/** テスト補助変数 */
+		List<ItemBean> expectedList;
+		List<ItemBean> actualList;
+
+		@BeforeEach
+		void setUp() {
+			expectedList = new ArrayList<ItemBean>();
+			expectedList.add(new ItemBean(8, "Invader Fighter", 3400));
+			expectedList.add(new ItemBean(1, "Javaの基本", 2500));
+			expectedList.add(new ItemBean(9, "Play the BascketBall", 2200));
+			expectedList.add(new ItemBean(4, "なつかしのアニメシリーズ", 2000));
+			expectedList.add(new ItemBean(6, "Space Wars 3", 1800));
+			expectedList.add(new ItemBean(3, "料理BOOK!", 1200));
+			expectedList.add(new ItemBean(5, "The Racer", 1000));
+			expectedList.add(new ItemBean(2, "MLB Fun", 980));
+			expectedList.add(new ItemBean(7, "パズルゲーム", 780));
+		}
+
+		@AfterEach
+		void tearDown() {
+		}
+
+		@Test
+		@DisplayName("【Test-02】500円以下の商品は0件である")
+		void test_02() throws Exception {
+			// setup
+			int upperPrice = 500;
+			expectedList = new ArrayList<ItemBean>();
+			// execute
+			actualList = sut.findByPrice(upperPrice);
+			// verfy
+			assertThat(actualList, is(expectedList));
+		}
+
+		@Test
+		@DisplayName("【Test-01】1000円以下の商品を取得できる")
+		void test_01() throws Exception {
+			// setup
+			int upperPrice = 1000;
+			expectedList = new ArrayList<ItemBean>();
+			expectedList.add(new ItemBean(2, "MLB Fun", 980));
+			expectedList.add(new ItemBean(5, "The Racer", 1000));
+			expectedList.add(new ItemBean(7, "パズルゲーム", 780));
+			// execute
+			actualList = sut.findByPrice(upperPrice);
+			// verify
+			for (int i = 0; i < actualList.size(); i++) {
+				assertThat(actualList.get(i).toString(), is(expectedList.get(i).toString()));
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName("ItemDAO2#sortPriceメソッドのテストクラス")
 	class sortPrice {
 		/** テスト補助変数 */
