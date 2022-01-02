@@ -38,7 +38,20 @@ public class ItemServlet2 extends HttpServlet {
 			if (action == null || action.isEmpty()) {
 				// actionキーがnullまたは空文字列の場合は全商品を検索
 				List<ItemBean> list = dao.findAll();
-				// 結果をリクエストスコープに登録
+				// 結果をリクエストスコープに登録して画面遷移
+				request.setAttribute("items", list);
+				this.gotoPage(request, response, "/showItem2.jsp");
+			} else if (action.equals("sort")) {
+				// keyキーを取得
+				String key = request.getParameter("key");
+				// keyキーによる引数の霧前
+				boolean isAscending = true;
+				if (key.equals("price_desc")) {
+					isAscending = false;
+				}
+				// 並べ替え他商品リストを取得
+				List<ItemBean> list = dao.sortPrice(isAscending);
+				// 結果をリクエストスコープに登録して画面遷移
 				request.setAttribute("items", list);
 				this.gotoPage(request, response, "/showItem2.jsp");
 			}
