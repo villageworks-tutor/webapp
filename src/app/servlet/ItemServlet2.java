@@ -49,8 +49,16 @@ public class ItemServlet2 extends HttpServlet {
 				if (key.equals("price_desc")) {
 					isAscending = false;
 				}
-				// 並べ替え他商品リストを取得
+				// 並べ替えた商品リストを取得
 				List<ItemBean> list = dao.sortPrice(isAscending);
+				// 結果をリクエストスコープに登録して画面遷移
+				request.setAttribute("items", list);
+				this.gotoPage(request, response, "/showItem2.jsp");
+			} else if (action.equals("search")) {
+				// priceキーを取得
+				int price = Integer.parseInt(request.getParameter("price"));	// TODO：数字以外が入力された場合の例外処理を追加する（補充題）
+				// 価格での検索を実行
+				List<ItemBean> list = dao.findByPrice(price);
 				// 結果をリクエストスコープに登録して画面遷移
 				request.setAttribute("items", list);
 				this.gotoPage(request, response, "/showItem2.jsp");
