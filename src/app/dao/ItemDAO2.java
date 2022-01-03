@@ -76,6 +76,12 @@ public class ItemDAO2 {
 		}
 	}
 
+	/**
+	 * 指定された価格以下の商品を取得する。
+	 * @param upperPrice 指定された価格の上限値
+	 * @return List<ItemBean> 商品リスト
+	 * @throws DAOException
+	 */
 	public List<ItemBean> findByPrice(int upperPrice) throws DAOException {
 		if (this.conn == null) {
 			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
@@ -160,6 +166,38 @@ public class ItemDAO2 {
 		} finally {
 			try {
 				if (rs != null) rs.close();
+				if (pstmt != null) pstmt.close();
+				this.close();
+			} catch (SQLException e) {
+				throw new DAOException("リソースの解放に失敗しました。");
+			}
+		}
+	}
+
+	public int addItem(String name, int price) throws DAOException {
+		if (this.conn == null) {
+			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
+			this.conn = this.getConnection();
+		}
+
+		// SQL実行関連オブジェクトの初期化
+		PreparedStatement pstmt = null;
+
+		// 実行するSQLを設定
+		String sql = "INSERT INTO item (name, price) VALUES (?, ?)";
+		try {
+			// SQL実行オブジェクトを取得
+			pstmt = this.conn.prepareStatement(sql);
+			// プレースホルダにパラメータを設定
+			pstmt.setString(1, name);
+			pstmt.setInt(2, price);
+			// SQLの実行
+			return pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの追加に失敗しました。");
+		} finally {
+			try {
 				if (pstmt != null) pstmt.close();
 				this.close();
 			} catch (SQLException e) {
