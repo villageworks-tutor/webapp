@@ -174,6 +174,13 @@ public class ItemDAO2 {
 		}
 	}
 
+	/**
+	 * 商品を追加する。
+	 * @param name 追加する商品の商品名
+	 * @param price 追加する商品の価格
+	 * @return 追加処理に成功した場合は1、それ以外は例外が発生する。
+	 * @throws DAOException
+	 */
 	public int addItem(String name, int price) throws DAOException {
 		if (this.conn == null) {
 			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
@@ -204,6 +211,38 @@ public class ItemDAO2 {
 				throw new DAOException("リソースの解放に失敗しました。");
 			}
 		}
+	}
+
+	public int delete(int code) throws DAOException {
+		if (this.conn == null) {
+			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
+			this.conn = this.getConnection();
+		}
+
+		// SQL実行オブジェクトの初期化
+		PreparedStatement pstmt = null;
+
+		// 実行するSQLを設定
+		String sql = "DELETE FROM item WHERE code = ?";
+		try {
+			// SQL実行オブジェクトを取得
+			pstmt = this.conn.prepareStatement(sql);
+			// プレースホルダにパラメータを設定
+			pstmt.setInt(1, code);
+			// SQLの実行
+			return pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの削除に失敗しました。");
+		} finally {
+			try {
+				if (pstmt != null) pstmt.close();
+				this.close();
+			} catch (SQLException e) {
+				throw new DAOException("リソースの解放に失敗しました。");
+			}
+		}
+
 	}
 
 	/**

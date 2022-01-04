@@ -31,6 +31,45 @@ class ItemDao2Test {
 	@AfterEach
 	void tearDown() throws Exception {
 	}
+
+	@Nested
+	@DisplayName("ItemDAO2#deleteメソッドのテストクラス")
+	class delete {
+		/** テスト補助変数 */
+		List<ItemBean> expectedList = null;
+		List<ItemBean> actualList = null;
+
+		@BeforeEach
+		void setUp() {
+
+		}
+
+		@Test
+		@DisplayName("【Test-01】商品番号10の商品を削除できる")
+		void test_01() throws Exception {
+			// setup
+			int target = 10;
+			expectedList = new ArrayList<ItemBean>();
+			expectedList.add(new ItemBean(1, "Javaの基本", 2500));
+			expectedList.add(new ItemBean(2, "MLB Fun", 980));
+			expectedList.add(new ItemBean(3, "料理BOOK!", 1200));
+			expectedList.add(new ItemBean(4, "なつかしのアニメシリーズ", 2000));
+			expectedList.add(new ItemBean(5, "The Racer", 1000));
+			expectedList.add(new ItemBean(6, "Space Wars 3", 1800));
+			expectedList.add(new ItemBean(7, "パズルゲーム", 780));
+			expectedList.add(new ItemBean(8, "Invader Fighter", 3400));
+			expectedList.add(new ItemBean(9, "Play the BascketBall", 2200));
+			// execute
+			sut.delete(target);
+			actualList = sut.findAll();
+			// verify
+			for (int i = 0; i < actualList.size(); i++) {
+				assertThat(actualList.get(i).toString(), is(expectedList.get(i).toString()));
+			}
+		}
+	}
+
+	@Disabled
 	@Nested
 	@DisplayName("ItemDAO2#findByPriceメソッドのテストクラス")
 	class findByPrice {
@@ -118,6 +157,7 @@ class ItemDao2Test {
 		}
 	}
 
+	@Disabled
 	@Nested
 	@DisplayName("ItemDAO2#sortPriceメソッドのテストクラス")
 	class sortPrice {
