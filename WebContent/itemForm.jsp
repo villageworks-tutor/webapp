@@ -14,4 +14,8 @@
 	<input type="hidden" name="action" value="search" />
 </form>
 
-
+<form action="/webapp/ItemServlet2" method="post">
+	削　除：商品番号 <input type="text" name="code" size="5" />
+	<input type="submit" value="削除" />
+	<input type="hidden" name="action" value="delete" />
+</form>
