@@ -213,6 +213,44 @@ public class ItemDAO2 {
 		}
 	}
 
+	public int update(int code, int price) throws DAOException {
+		if (this.conn == null) {
+			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
+			this.conn = this.getConnection();
+		}
+
+		// SQL実行関連オブジェクトの初期化
+		PreparedStatement pstmt = null;
+
+		// 実行するSQLを設定
+		String sql = "UPDATE item SET price = ? WHERE code = ?";
+		try {
+			// SQL実行オブジェクトを取得
+			pstmt = this.conn.prepareStatement(sql);
+			// プレースホルダにパラメータを設定
+			pstmt.setInt(1, price);
+			pstmt.setInt(2, code);
+			// SQLの実行
+			return pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの更新に失敗しました。");
+		} finally {
+			try {
+				if (pstmt != null) pstmt.close();
+				this.close();
+			} catch (SQLException e) {
+				throw new DAOException("リソースの解放に失敗しました。");
+			}
+		}
+	}
+
+	/**
+	 * 指定した商品を削除する。
+	 * @param code 削除対象商品の商品番号
+	 * @return 削除処理に成功した場合は1、それ以外は例外が発生する。
+	 * @throws DAOException
+	 */
 	public int delete(int code) throws DAOException {
 		if (this.conn == null) {
 			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
