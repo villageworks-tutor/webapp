@@ -73,6 +73,16 @@ public class ItemServlet2 extends HttpServlet {
 				// 結果をリクエストスコープに登録して画面遷移
 				request.setAttribute("items", list);
 				this.gotoPage(request, response, "/showItem2.jsp");
+			} else if (action.equals("delete")) {
+				// codeキーを取得
+				int code = Integer.parseInt(request.getParameter("code"));	// TODO：数字以外が入力された場合の例外処理を追加する（補充題）
+				// 商品削除処理を実行
+				dao.delete(code);
+				// 確認用の全件検索
+				List<ItemBean> list = dao.findAll();
+				// 結果をリクエストスコープに登録して画面遷移
+				request.setAttribute("items", list);
+				this.gotoPage(request, response, "/showItem2.jsp");
 			}
 		} catch (DAOException e) {
 			e.printStackTrace();
