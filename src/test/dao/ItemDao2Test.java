@@ -16,16 +16,16 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import app.bean.ItemBean;
-import app.dao.ItemDAO2;
+import app.dao.ItemDAO;
 
 class ItemDao2Test {
 
 	/** テスト対象クラス：system under test */
-	ItemDAO2 sut;
+	ItemDAO sut;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		sut = new ItemDAO2();
+		sut = new ItemDAO();
 	}
 
 	@AfterEach
@@ -259,7 +259,7 @@ class ItemDao2Test {
 	@Test
 	@DisplayName("ItemDAO2のインスタンス化")
 	void test_00() {
-		assertThat(sut, is(instanceOf(ItemDAO2.class)));
+		assertThat(sut, is(instanceOf(ItemDAO.class)));
 	}
 
 }

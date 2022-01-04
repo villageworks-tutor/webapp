@@ -29,13 +29,18 @@ public class ItemDAO {
 		this.conn = this.getConnection();
 	}
 
+	/**
+	 * 商品の全件を取得する。
+	 * @return List<ItemBean> 商品リスト
+	 * @throws DAOException
+	 */
 	public List<ItemBean> findAll() throws DAOException {
 		if (this.conn == null) {
 			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
 			this.conn = this.getConnection();
 		}
 
-		// SQL関連オブジェクトを初期化
+		// SQL実行関連オブジェクトを初期化
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
@@ -69,6 +74,213 @@ public class ItemDAO {
 				throw new DAOException("リソースの解放に失敗しました。");
 			}
 		}
+	}
+
+	/**
+	 * 指定された価格以下の商品を取得する。
+	 * @param upperPrice 指定された価格の上限値
+	 * @return List<ItemBean> 商品リスト
+	 * @throws DAOException
+	 */
+	public List<ItemBean> findByPrice(int upperPrice) throws DAOException {
+		if (this.conn == null) {
+			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
+			this.conn = this.getConnection();
+		}
+
+		// SQL実行関連オブジェクトの初期化
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		// 実行するSQLの設定
+		String sql = "SELECT * FROM item WHERE price <= ?";
+		try {
+			// SQL実行オブジェクトを取得
+			pstmt = this.conn.prepareStatement(sql);
+			// プレースホルダにパラメータを設定
+			pstmt.setInt(1, upperPrice);
+			// SQLを実行し結果セットを取得
+			rs = pstmt.executeQuery();
+			// 結果セットから商品リストを作成
+			List<ItemBean> list = new ArrayList<ItemBean>();
+			while (rs.next()) {
+				int code = rs.getInt("code");
+				String name = rs.getString("name");
+				int price = rs.getInt("price");
+				list.add(new ItemBean(code, name, price));
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの取得に失敗しました。");
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (pstmt != null) pstmt.close();
+				this.close();
+			} catch (SQLException e) {
+				throw new DAOException("リソースの解放に失敗しました。");
+			}
+		}
+	}
+
+	/**
+	 * 価格で並べ替える。
+	 * @param isAscending 価格の低い順の場合はtrue、それ以外はfalse
+	 * @return List<ItemBean> 商品リスト
+	 * @throws DAOException
+	 */
+	public List<ItemBean> sortPrice(boolean isAscending) throws DAOException {
+		if (this.conn == null) {
+			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
+			this.conn = this.getConnection();
+		}
+
+		// SQL実行関連オブジェクトの初期化
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		// 実行するSQLの初期化
+		String sql = "SELECT * FROM item ORDER BY price ";
+		// SQL実行オブジェクトの取得
+		if (isAscending) {
+			sql += "ASC";
+		} else {
+			sql += "DESC";
+		}
+		try {
+			// SQL実行オブジェクトを取得
+			pstmt = this.conn.prepareStatement(sql);
+			// SQLの実行と結果セットの取得
+			rs = pstmt.executeQuery();
+			// 結果セットから商品リストを作成
+			List<ItemBean> list = new ArrayList<ItemBean>();
+			while (rs.next()) {
+				int code = rs.getInt("code");
+				String name = rs.getString("name");
+				int price = rs.getInt("price");
+				list.add(new ItemBean(code, name, price));
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの取得に失敗しました。");
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (pstmt != null) pstmt.close();
+				this.close();
+			} catch (SQLException e) {
+				throw new DAOException("リソースの解放に失敗しました。");
+			}
+		}
+	}
+
+	/**
+	 * 商品を追加する。
+	 * @param name 追加する商品の商品名
+	 * @param price 追加する商品の価格
+	 * @return 追加処理に成功した場合は1、それ以外は例外が発生する。
+	 * @throws DAOException
+	 */
+	public int addItem(String name, int price) throws DAOException {
+		if (this.conn == null) {
+			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
+			this.conn = this.getConnection();
+		}
+
+		// SQL実行関連オブジェクトの初期化
+		PreparedStatement pstmt = null;
+
+		// 実行するSQLを設定
+		String sql = "INSERT INTO item (name, price) VALUES (?, ?)";
+		try {
+			// SQL実行オブジェクトを取得
+			pstmt = this.conn.prepareStatement(sql);
+			// プレースホルダにパラメータを設定
+			pstmt.setString(1, name);
+			pstmt.setInt(2, price);
+			// SQLの実行
+			return pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの追加に失敗しました。");
+		} finally {
+			try {
+				if (pstmt != null) pstmt.close();
+				this.close();
+			} catch (SQLException e) {
+				throw new DAOException("リソースの解放に失敗しました。");
+			}
+		}
+	}
+
+	public int update(int code, int price) throws DAOException {
+		if (this.conn == null) {
+			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
+			this.conn = this.getConnection();
+		}
+
+		// SQL実行関連オブジェクトの初期化
+		PreparedStatement pstmt = null;
+
+		// 実行するSQLを設定
+		String sql = "UPDATE item SET price = ? WHERE code = ?";
+		try {
+			// SQL実行オブジェクトを取得
+			pstmt = this.conn.prepareStatement(sql);
+			// プレースホルダにパラメータを設定
+			pstmt.setInt(1, price);
+			pstmt.setInt(2, code);
+			// SQLの実行
+			return pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの更新に失敗しました。");
+		} finally {
+			try {
+				if (pstmt != null) pstmt.close();
+				this.close();
+			} catch (SQLException e) {
+				throw new DAOException("リソースの解放に失敗しました。");
+			}
+		}
+	}
+
+	/**
+	 * 指定した商品を削除する。
+	 * @param code 削除対象商品の商品番号
+	 * @return 削除処理に成功した場合は1、それ以外は例外が発生する。
+	 * @throws DAOException
+	 */
+	public int delete(int code) throws DAOException {
+		if (this.conn == null) {
+			// 同じインスタンスでSQLを複数回実行する場合、connはnullとなっているので、再接続する。
+			this.conn = this.getConnection();
+		}
+
+		// SQL実行オブジェクトの初期化
+		PreparedStatement pstmt = null;
+
+		// 実行するSQLを設定
+		String sql = "DELETE FROM item WHERE code = ?";
+		try {
+			// SQL実行オブジェクトを取得
+			pstmt = this.conn.prepareStatement(sql);
+			// プレースホルダにパラメータを設定
+			pstmt.setInt(1, code);
+			// SQLの実行
+			return pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの削除に失敗しました。");
+		} finally {
+			try {
+				if (pstmt != null) pstmt.close();
+				this.close();
+			} catch (SQLException e) {
+				throw new DAOException("リソースの解放に失敗しました。");
+			}
+		}
+
 	}
 
 	/**

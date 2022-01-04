@@ -8,7 +8,8 @@
 	<title>Show All Item</title>
 </head>
 <body>
-
+	<jsp:include page="/itemForm.jsp" />
+	<hr />
 	<table border="1">
 		<tr>
 			<td>NO</td>
@@ -20,10 +21,9 @@
 		<tr>
 			<td>${item.code}</td>
 			<td>${item.name}</td>
-			<td>${item.price}</td><!-- TODO：3桁区切り表示に変更する（補足題） -->
+			<td>${item.price}</td>
 		</tr>
 		</c:forEach>
 	</table>
-
 </body>
 </html>
